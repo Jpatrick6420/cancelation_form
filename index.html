@@ -72,8 +72,9 @@
     <p id="message" class="message" role="status" aria-live="polite"></p>
   </main>
 
-  <!-- pdf-lib: PDF reading/writing in the browser -->
-  <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+  <!-- pdf-lib: PDF reading/writing in the browser.
+       Bundled locally (vendor/) so the app makes ZERO network requests. -->
+  <script src="vendor/pdf-lib.min.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

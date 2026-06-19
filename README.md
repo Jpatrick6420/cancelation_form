@@ -4,6 +4,26 @@ A tiny browser app that takes a few details, writes them onto a PDF, and
 downloads the filled copy. Everything runs **locally in your browser** —
 no server, no install, and the PDF never leaves your computer.
 
+## Security: nothing leaves the machine
+
+This app makes **zero network requests**. There is no form submission, no
+upload, no analytics, and no third-party scripts:
+
+- The PDF library (`pdf-lib`) is **bundled locally** in `vendor/` — it is
+  *not* loaded from a CDN.
+- Your input is read in-memory, written onto the PDF in the browser, and
+  handed back to you as a download. None of it is transmitted anywhere.
+
+You can verify this yourself:
+
+- Open the browser's **DevTools → Network** tab and use the app — you'll
+  see no outbound requests for your data.
+- Or **disconnect from the internet entirely** and confirm it still works.
+
+The whole app is plain static files (`index.html`, `styles.css`,
+`app.js`, `vendor/pdf-lib.min.js`) — readable, with no build step and no
+hidden dependencies.
+
 ## Fields
 
 - Name
@@ -24,11 +44,14 @@ no server, no install, and the PDF never leaves your computer.
    (see below) so it loads automatically.
 4. Click **Fill PDF & Download**.
 
-> Requires an internet connection the first time, because it loads the
-> `pdf-lib` library from a CDN. To run fully offline, download
-> [pdf-lib.min.js](https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js)
-> into this folder and change the script tag in `index.html` to
-> `<script src="pdf-lib.min.js"></script>`.
+> Works **fully offline** — no internet connection is ever needed.
+>
+> Note: when you open the file directly with `file://` (double-click),
+> some browsers block auto-loading a bundled `form.pdf` for local-file
+> security reasons. The **Choose a PDF file** picker always works in that
+> case. If you want the bundled `form.pdf` to auto-load, serve the folder
+> locally (e.g. `python3 -m http.server` and open `http://localhost:8000`)
+> — that server runs only on your machine and still sends nothing out.
 
 ## Bundling your PDF
 
@@ -65,4 +88,5 @@ files, so it works as-is.
 | `index.html` | The form and buttons |
 | `styles.css` | Styling |
 | `app.js` | Form-reading and PDF-filling logic (edit field names / coordinates here) |
+| `vendor/pdf-lib.min.js` | The bundled PDF library (so there are no external/CDN requests) |
 | `form.pdf` | *(you add this)* the PDF template |
