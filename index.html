@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Policy Cancellation Form Filler</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="container">
+    <h1>Policy Cancellation Form Filler</h1>
+    <p class="subtitle">
+      Enter the details below and click <strong>Fill PDF &amp; Download</strong>.
+      Everything runs in your browser &mdash; nothing is uploaded anywhere.
+    </p>
+
+    <form id="cancel-form" autocomplete="off">
+      <div class="field">
+        <label for="name">Name</label>
+        <input id="name" name="name" type="text" />
+      </div>
+
+      <div class="field">
+        <label for="address">Address</label>
+        <textarea id="address" name="address" rows="2"></textarea>
+      </div>
+
+      <div class="field">
+        <label for="previousCompany">Previous Company</label>
+        <input id="previousCompany" name="previousCompany" type="text" />
+      </div>
+
+      <div class="field">
+        <label for="homePolicy">Home Policy Number</label>
+        <input id="homePolicy" name="homePolicy" type="text" />
+      </div>
+
+      <div class="field">
+        <label for="autoPolicy">Auto Policy Number</label>
+        <input id="autoPolicy" name="autoPolicy" type="text" />
+      </div>
+
+      <div class="field">
+        <label for="umbrellaPolicy">Umbrella Policy Number</label>
+        <input id="umbrellaPolicy" name="umbrellaPolicy" type="text" />
+      </div>
+
+      <div class="field">
+        <label for="cancelDate">Cancellation Date</label>
+        <input id="cancelDate" name="cancelDate" type="date" />
+      </div>
+    </form>
+
+    <fieldset class="pdf-source">
+      <legend>PDF template</legend>
+      <p class="hint" id="template-status">
+        Looking for a bundled <code>form.pdf</code>&hellip;
+      </p>
+      <label class="file-label">
+        Or choose a PDF file:
+        <input id="pdf-file" type="file" accept="application/pdf" />
+      </label>
+    </fieldset>
+
+    <div class="actions">
+      <button id="fill-btn" type="button" class="primary">Fill PDF &amp; Download</button>
+      <button id="grid-btn" type="button" class="secondary" title="Stamps a coordinate grid on the PDF so you can read off x/y positions for placing text">
+        Download coordinate grid
+      </button>
+    </div>
+
+    <p id="message" class="message" role="status" aria-live="polite"></p>
+  </main>
+
+  <!-- pdf-lib: PDF reading/writing in the browser -->
+  <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
