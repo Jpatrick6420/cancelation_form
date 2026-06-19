@@ -15,6 +15,8 @@
 // `id` matches the <input> id in index.html.
 // `acroName` is the PDF form-field name to try when the PDF has real
 //   fields (we also try the id and the label as fallbacks).
+// `generated: true` means there is no input on the page; the value is
+//   produced by `value()` at the moment the form is generated.
 const FIELDS = [
   { id: "name",            label: "Name",                   acroName: "Name" },
   { id: "address",         label: "Address",                acroName: "Address" },
@@ -23,7 +25,17 @@ const FIELDS = [
   { id: "autoPolicy",      label: "Auto Policy Number",     acroName: "AutoPolicy" },
   { id: "umbrellaPolicy",  label: "Umbrella Policy Number", acroName: "UmbrellaPolicy" },
   { id: "cancelDate",      label: "Cancellation Date",      acroName: "CancelDate" },
+  // Auto-generated: today's date as "Month Day, Year" (e.g. June 19, 2026).
+  { id: "generatedDate",   label: "Generated Date",         acroName: "GeneratedDate",
+    generated: true, value: () => formatLongDate(new Date()) },
 ];
+
+// Format a date as "Month Day, Year", e.g. "June 19, 2026".
+function formatLongDate(d) {
+  return d.toLocaleDateString("en-US", {
+    year: "numeric", month: "long", day: "numeric",
+  });
+}
 
 // ---- Coordinate layout for FLAT PDFs -------------------------------
 // Used only when the PDF has no real form fields.
@@ -42,6 +54,7 @@ const FIELD_LAYOUT = {
   autoPolicy:      { page: 0, x: 150, y: 580, size: 11 },
   umbrellaPolicy:  { page: 0, x: 150, y: 550, size: 11 },
   cancelDate:      { page: 0, x: 150, y: 520, size: 11 },
+  generatedDate:   { page: 0, x: 150, y: 490, size: 11 },
 };
 
 const OUTPUT_FILENAME = "cancellation-form-filled.pdf";
@@ -68,7 +81,11 @@ function setMessage(text, kind) {
 function getFormValues() {
   const values = {};
   for (const f of FIELDS) {
-    values[f.id] = (document.getElementById(f.id).value || "").trim();
+    if (f.generated) {
+      values[f.id] = f.value();
+    } else {
+      values[f.id] = (document.getElementById(f.id).value || "").trim();
+    }
   }
   return values;
 }

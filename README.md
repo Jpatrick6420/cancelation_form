@@ -13,6 +13,7 @@ no server, no install, and the PDF never leaves your computer.
 - Auto Policy Number
 - Umbrella Policy Number
 - Cancellation Date
+- Generated Date *(auto-filled with today's date as "Month Day, Year", e.g. June 19, 2026 — no input needed)*
 
 ## How to use it
 
