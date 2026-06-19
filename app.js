@@ -15,20 +15,33 @@
 // `id` matches the <input> id in index.html.
 // `acroName` is the PDF form-field name to try when the PDF has real
 //   fields (we also try the id and the label as fallbacks).
+// `prefix` is prepended to the value when printed (e.g. "Home# ").
 // `generated: true` means there is no input on the page; the value is
 //   produced by `value()` at the moment the form is generated.
+//
+// Empty fields are never printed (no value -> skipped) in every mode.
 const FIELDS = [
   { id: "name",            label: "Name",                   acroName: "Name" },
   { id: "address",         label: "Address",                acroName: "Address" },
   { id: "previousCompany", label: "Previous Company",       acroName: "PreviousCompany" },
-  { id: "homePolicy",      label: "Home Policy Number",     acroName: "HomePolicy" },
-  { id: "autoPolicy",      label: "Auto Policy Number",     acroName: "AutoPolicy" },
-  { id: "umbrellaPolicy",  label: "Umbrella Policy Number", acroName: "UmbrellaPolicy" },
+  { id: "homePolicy",      label: "Home Policy Number",     acroName: "HomePolicy",     prefix: "Home# " },
+  { id: "autoPolicy",      label: "Auto Policy Number",     acroName: "AutoPolicy",     prefix: "Auto# " },
+  { id: "umbrellaPolicy",  label: "Umbrella Policy Number", acroName: "UmbrellaPolicy", prefix: "Umbrella# " },
+  // Wildcards: typed exactly as printed, e.g. "Boat# 12332322". No prefix.
+  { id: "wildcard1",       label: "Other (e.g. Boat# 12332322)", acroName: "Wildcard1" },
+  { id: "wildcard2",       label: "Other (e.g. RV# 998877)",     acroName: "Wildcard2" },
   { id: "cancelDate",      label: "Cancellation Date",      acroName: "CancelDate" },
-  // Auto-generated: today's date as "Month Day, Year" (e.g. June 19, 2026).
+  // Auto-generated: the date the document is created, as "Month Day, Year".
   { id: "generatedDate",   label: "Generated Date",         acroName: "GeneratedDate",
     generated: true, value: () => formatLongDate(new Date()) },
 ];
+
+// Build the text to print for a field: prefix + value (prefix only when
+// there's a value, so empty fields stay blank and are skipped entirely).
+function displayText(field, rawValue) {
+  if (!rawValue) return "";
+  return (field.prefix || "") + rawValue;
+}
 
 // Format a date as "Month Day, Year", e.g. "June 19, 2026".
 function formatLongDate(d) {
@@ -53,8 +66,10 @@ const FIELD_LAYOUT = {
   homePolicy:      { page: 0, x: 150, y: 610, size: 11 },
   autoPolicy:      { page: 0, x: 150, y: 580, size: 11 },
   umbrellaPolicy:  { page: 0, x: 150, y: 550, size: 11 },
-  cancelDate:      { page: 0, x: 150, y: 520, size: 11 },
-  generatedDate:   { page: 0, x: 150, y: 490, size: 11 },
+  wildcard1:       { page: 0, x: 150, y: 520, size: 11 },
+  wildcard2:       { page: 0, x: 150, y: 490, size: 11 },
+  cancelDate:      { page: 0, x: 150, y: 460, size: 11 },
+  generatedDate:   { page: 0, x: 150, y: 430, size: 11 },
 };
 
 const OUTPUT_FILENAME = "cancellation-form-filled.pdf";
@@ -127,7 +142,7 @@ async function fillPdf(srcBytes, values) {
       const field =
         byName.get(f.acroName) || byName.get(f.id) || byName.get(f.label);
       if (field && typeof field.setText === "function") {
-        try { field.setText(value); } catch { /* not a text field */ }
+        try { field.setText(displayText(f, value)); } catch { /* not a text field */ }
       }
     }
     try { form.updateFieldAppearances(font); } catch { /* ignore */ }
@@ -140,7 +155,7 @@ async function fillPdf(srcBytes, values) {
       if (!value || !layout) continue;
       const page = pages[layout.page] || pages[0];
       // Support multi-line text (e.g. address) by splitting on newlines.
-      const lines = value.split(/\r?\n/);
+      const lines = displayText(f, value).split(/\r?\n/);
       const lineHeight = (layout.size || 11) * 1.3;
       lines.forEach((line, i) => {
         page.drawText(line, {

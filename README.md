@@ -29,11 +29,14 @@ hidden dependencies.
 - Name
 - Address
 - Previous Company
-- Home Policy Number
-- Auto Policy Number
-- Umbrella Policy Number
+- Home Policy Number *(printed as `Home# <number>`)*
+- Auto Policy Number *(printed as `Auto# <number>`)*
+- Umbrella Policy Number *(printed as `Umbrella# <number>`)*
+- Two wildcard lines *(printed exactly as typed, e.g. `Boat# 12332322`)*
 - Cancellation Date
 - Generated Date *(auto-filled with today's date as "Month Day, Year", e.g. June 19, 2026 — no input needed)*
+
+Any field left blank is skipped entirely — nothing is printed for it.
 
 ## How to use it
 
